@@ -1,8 +1,20 @@
-import { createLocalVue, mount } from '@vue/test-utils'
+import {
+  createLocalVue,
+  mount
+} from '@vue/test-utils'
 import Simulate from './Simulate'
-import { getQueriesForElement, fireEvent, wait, waitForElement } from 'dom-testing-library'
+import {
+  getQueriesForElement,
+  fireEvent,
+  wait,
+  waitForElement
+} from 'dom-testing-library'
 
-function render (TestComponent, { props = null, store = null, routes = null } = {}, configurationCb) {
+function render (TestComponent, {
+  props = null,
+  store = null,
+  routes = null
+} = {}, configurationCb) {
   const localVue = createLocalVue()
   let vuexStore = null
   let router = null
@@ -27,11 +39,13 @@ function render (TestComponent, { props = null, store = null, routes = null } = 
     localVue,
     router,
     store: vuexStore,
-    propsData: { ...props },
+    propsData: { ...props
+    },
     attachToDocument: true
   })
 
   return {
+    wrapper,
     unmount: () => wrapper.destroy(),
     isUnmounted: () => wrapper.vm._isDestroyed,
     html: () => wrapper.html(),
@@ -41,4 +55,10 @@ function render (TestComponent, { props = null, store = null, routes = null } = 
   }
 }
 
-export { render, Simulate, fireEvent, wait, waitForElement }
+export {
+  render,
+  Simulate,
+  fireEvent,
+  wait,
+  waitForElement
+}
