@@ -45,7 +45,7 @@ function render (TestComponent, {
   })
 
   return {
-    wrapper,
+    container: wrapper,
     unmount: () => wrapper.destroy(),
     isUnmounted: () => wrapper.vm._isDestroyed,
     html: () => wrapper.html(),

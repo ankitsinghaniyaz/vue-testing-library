@@ -59,7 +59,7 @@ function render(TestComponent) {
   });
 
   return (0, _extends3.default)({
-    wrapper: wrapper,
+    container: wrapper,
     unmount: function unmount() {
       return wrapper.destroy();
     },
