@@ -1,14 +1,16 @@
-'use strict';
+"use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-var simulate = function simulate(event, elem) {
-  for (var _len = arguments.length, params = Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
-    params[_key - 2] = arguments[_key];
-  }
+exports.default = void 0;
 
+var simulate = function simulate(event, elem) {
   if (elem) {
+    for (var _len = arguments.length, params = new Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
+      params[_key - 2] = arguments[_key];
+    }
+
     if (elem.trigger) {
       return elem.trigger.apply(elem, [event].concat(params));
     }
@@ -29,10 +31,11 @@ var touch = function touch(elem) {
   blur(elem);
 };
 
-exports.default = {
+var _default = {
   blur: blur,
   click: click,
   focus: focus,
   submit: submit,
   touch: touch
 };
+exports.default = _default;

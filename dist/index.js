@@ -1,47 +1,68 @@
-'use strict';
+"use strict";
+
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.waitForElement = exports.wait = exports.fireEvent = exports.Simulate = exports.render = undefined;
+var _exportNames = {
+  cleanup: true,
+  render: true,
+  Simulate: true
+};
+exports.cleanup = cleanup;
+exports.render = render;
+Object.defineProperty(exports, "Simulate", {
+  enumerable: true,
+  get: function get() {
+    return _Simulate.default;
+  }
+});
 
-var _extends2 = require('babel-runtime/helpers/extends');
+var _objectSpread2 = _interopRequireDefault(require("@babel/runtime/helpers/objectSpread"));
 
-var _extends3 = _interopRequireDefault(_extends2);
+var _testUtils = require("@vue/test-utils");
 
-var _testUtils = require('@vue/test-utils');
+var _Simulate = _interopRequireDefault(require("./Simulate"));
 
-var _Simulate = require('./Simulate');
+var _domTestingLibrary = require("dom-testing-library");
 
-var _Simulate2 = _interopRequireDefault(_Simulate);
-
-var _domTestingLibrary = require('dom-testing-library');
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+Object.keys(_domTestingLibrary).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (Object.prototype.hasOwnProperty.call(_exportNames, key)) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _domTestingLibrary[key];
+    }
+  });
+});
+var mountedWrappers = new Set();
 
 function render(TestComponent) {
   var _ref = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
       _ref$props = _ref.props,
-      props = _ref$props === undefined ? null : _ref$props,
+      props = _ref$props === void 0 ? null : _ref$props,
       _ref$store = _ref.store,
-      store = _ref$store === undefined ? null : _ref$store,
+      store = _ref$store === void 0 ? null : _ref$store,
       _ref$routes = _ref.routes,
-      routes = _ref$routes === undefined ? null : _ref$routes;
+      routes = _ref$routes === void 0 ? null : _ref$routes;
 
-  var configurationCb = arguments[2];
-
+  var configurationCb = arguments.length > 2 ? arguments[2] : undefined;
   var localVue = (0, _testUtils.createLocalVue)();
   var vuexStore = null;
   var router = null;
 
   if (store) {
     var Vuex = require('vuex');
+
     localVue.use(Vuex);
     vuexStore = new Vuex.Store(store);
   }
 
   if (routes) {
     var VueRouter = require('vue-router');
+
     localVue.use(VueRouter);
     router = new VueRouter(routes);
   }
@@ -54,12 +75,15 @@ function render(TestComponent) {
     localVue: localVue,
     router: router,
     store: vuexStore,
-    propsData: (0, _extends3.default)({}, props),
-    attachToDocument: true
+    propsData: (0, _objectSpread2.default)({}, props),
+    attachToDocument: true,
+    sync: false
   });
-
-  return (0, _extends3.default)({
+  return (0, _objectSpread2.default)({
     container: wrapper,
+    debug: function debug() {
+      return console.log((0, _domTestingLibrary.prettyDOM)(wrapper.element));
+    },
     unmount: function unmount() {
       return wrapper.destroy();
     },
@@ -70,7 +94,8 @@ function render(TestComponent) {
       return wrapper.html();
     },
     updateProps: function updateProps(_) {
-      return wrapper.setProps(_);
+      wrapper.setProps(_);
+      return (0, _domTestingLibrary.wait)();
     },
     updateState: function updateState(_) {
       return wrapper.setData(_);
@@ -78,8 +103,15 @@ function render(TestComponent) {
   }, (0, _domTestingLibrary.getQueriesForElement)(wrapper.element));
 }
 
-exports.render = render;
-exports.Simulate = _Simulate2.default;
-exports.fireEvent = _domTestingLibrary.fireEvent;
-exports.wait = _domTestingLibrary.wait;
-exports.waitForElement = _domTestingLibrary.waitForElement;
+function cleanup() {
+  mountedWrappers.forEach(cleanupAtWrapper);
+}
+
+function cleanupAtWrapper(wrapper) {
+  if (wrapper.parentNode === document.body) {
+    document.body.removeChild(wrapper);
+  }
+
+  wrapper.destroy();
+  mountedWrappers.delete(wrapper);
+}
