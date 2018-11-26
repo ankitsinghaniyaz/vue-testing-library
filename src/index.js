@@ -5,12 +5,13 @@ import {
 import Simulate from './Simulate'
 import {
   getQueriesForElement,
-  fireEvent,
-  wait,
-  waitForElement
+  prettyDOM,
+  wait
 } from 'dom-testing-library'
 
-function render (TestComponent, {
+const mountedWrappers = new Set()
+
+function render(TestComponent, {
   props = null,
   store = null,
   routes = null
@@ -41,24 +42,40 @@ function render (TestComponent, {
     store: vuexStore,
     propsData: { ...props
     },
-    attachToDocument: true
+    attachToDocument: true,
+    sync: false
   })
 
   return {
     container: wrapper,
+    debug: () => console.log(prettyDOM(wrapper.element)),
     unmount: () => wrapper.destroy(),
     isUnmounted: () => wrapper.vm._isDestroyed,
     html: () => wrapper.html(),
-    updateProps: _ => wrapper.setProps(_),
+    updateProps: _ => {
+      wrapper.setProps(_)
+      return wait()
+    },
     updateState: _ => wrapper.setData(_),
     ...getQueriesForElement(wrapper.element)
   }
 }
 
+function cleanup() {
+  mountedWrappers.forEach(cleanupAtWrapper)
+}
+
+function cleanupAtWrapper(wrapper) {
+  if (wrapper.parentNode === document.body) {
+    document.body.removeChild(wrapper)
+  }
+  wrapper.destroy()
+  mountedWrappers.delete(wrapper)
+}
+
+export * from 'dom-testing-library'
 export {
+  cleanup,
   render,
-  Simulate,
-  fireEvent,
-  wait,
-  waitForElement
+  Simulate
 }
