@@ -64,7 +64,9 @@ function render(TestComponent) {
     var VueRouter = require('vue-router');
 
     localVue.use(VueRouter);
-    router = new VueRouter(routes);
+    router = new VueRouter({
+      routes: routes
+    });
   }
 
   if (configurationCb && typeof configurationCb === 'function') {

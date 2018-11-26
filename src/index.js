@@ -11,7 +11,7 @@ import {
 
 const mountedWrappers = new Set()
 
-function render(TestComponent, {
+function render (TestComponent, {
   props = null,
   store = null,
   routes = null
@@ -29,7 +29,9 @@ function render(TestComponent, {
   if (routes) {
     const VueRouter = require('vue-router')
     localVue.use(VueRouter)
-    router = new VueRouter(routes)
+    router = new VueRouter({
+      routes
+    })
   }
 
   if (configurationCb && typeof configurationCb === 'function') {
@@ -61,11 +63,11 @@ function render(TestComponent, {
   }
 }
 
-function cleanup() {
+function cleanup () {
   mountedWrappers.forEach(cleanupAtWrapper)
 }
 
-function cleanupAtWrapper(wrapper) {
+function cleanupAtWrapper (wrapper) {
   if (wrapper.parentNode === document.body) {
     document.body.removeChild(wrapper)
   }
